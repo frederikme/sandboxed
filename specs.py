@@ -1,6 +1,7 @@
 import psutil
 import os
 import subprocess
+import math
 
 class Specs:
     @staticmethod
@@ -23,16 +24,16 @@ class Specs:
         # if computer has less than 200 gigabytes of disk space, something is probably phishy
         if total < 60:
             did_succeed = 0.1
-        elif total < 200:
+        elif total < 100:
             did_succeed = 0.5
-        elif total < 300:
-            did_succeed = 0.9
+        elif total < 125:
+            did_succeed = 0.8
+        elif total < 200:
+            did_succeed = 0.90
         elif total < 400:
             did_succeed = 0.95
         elif total < 500:
             did_succeed = 0.99
-
-        # TODO: check out total/used or total/free ratio?
 
         return did_succeed
 
@@ -41,16 +42,16 @@ class Specs:
         did_succeed = 1
 
         # get RAM and convert into gigabytes
-        total_ram = psutil.virtual_memory().total / (2 ** 30)
+        total_ram = math.ceil(psutil.virtual_memory().total / (2 ** 30))
         print(psutil.virtual_memory().available / (2**30))
         print(f"Total RAM: {total_ram} GiB")
 
         if total_ram < 2:
             did_succeed = 0.01
         elif total_ram < 4:
-            did_succeed = 0.5
+            did_succeed = 0.75
         elif total_ram < 8:
-            did_succeed = 0.9
+            did_succeed = 0.95
         elif total_ram < 16:
             did_succeed = 0.99
 
@@ -70,7 +71,7 @@ class Specs:
         if logical_cores % 2 != 0:
             did_succeed = 0.01
         elif logical_cores < 4:
-            did_succeed = 0.98
+            did_succeed = 0.97
         elif logical_cores < 8:
             did_succeed = 0.99
 
