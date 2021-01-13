@@ -120,10 +120,13 @@ class FileSystem:
         description = f"PROCESSES will look for VM related files."
         explanation = None
 
+        current_processes = psutil.process_iter()
+
         for process in FileSystem._PROCESSES:
-            if process.lower() in (p.name().lower() for p in psutil.process_iter()):
-                score = 0
-                explanation = f"Found a process: {process} which is related to VM."
+            for current_p in current_processes:
+                if process.lower() == current_p.name().lower():
+                    score = 0
+                    explanation = f"Found a process: {process} which is related to VM."
 
             return score, description, explanation
 
@@ -159,8 +162,8 @@ class FileSystem:
                 score = 5
 
         except Exception as e:
-            score = 5
-            explanation = f"Something went wrong, so giving benefit of the doubt. Considering this test successful.\nexception: {e}"
+            score = 3
+            explanation = f"Something went wrong, this should not get benefit of the doubt.\nexception: {e}"
 
         return score, description, explanation
 

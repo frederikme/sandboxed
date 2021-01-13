@@ -87,7 +87,7 @@ class Specs:
         # RED
         if logical_cores % 2 != 0:
             score = 0
-            explanation = "EVERY computer has an EVEN amount of cpu cores."
+            explanation = "EVERY computer should have an even amount of cpu cores."
 
         # ORANGE
         elif logical_cores < 4:
@@ -165,7 +165,7 @@ class Specs:
 
     # TODO add all known manufacturers of virtual machines
     _MANUFACTURER = [
-        'innotek gmbh'
+        'innotek'
     ]
 
     @staticmethod

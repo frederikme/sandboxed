@@ -1,7 +1,7 @@
 from internet_access import InternetAccess
 from specs import Specs
 from file_system import FileSystem
-import time
+import time, os
 
 class Sandbox:
 
@@ -11,12 +11,40 @@ class Sandbox:
 
         return
 
-    def is_sandboxed(self, info=True):
-        self._check_specs(info=info)
-        self._check_internet(info=info)
-        self._check_file_system(info=info)
+    def _normalize(self, values):
 
-        # CONCLUSION ???
+        normalization = 0
+
+        for value in values:
+            # 0 value means, ABORT -> return 0
+            if value == 0:
+                return 0
+            elif value == 1:
+                normalization -= 1
+            elif value == 2:
+                normalization += 0.5
+            elif value == 3:
+                normalization += 2
+            else:
+                normalization += value
+
+        normalization = normalization / len(values)
+        return normalization
+
+
+    def is_sandboxed(self, info=True):
+        s1 = self._check_specs(info=info)
+        s2 = self._check_internet(info=info)
+        s3 = self._check_file_system(info=info)
+
+        print(s1, s2, s3)
+
+        final_score = self._normalize([s1, s2, s3])
+        print(final_score)
+
+        percentage = 100 - ((final_score / 5) * 100)
+
+        print(f"Conclusion: {percentage}% chance of being in a virtual environment.")
 
         if info:
             print('\n')
@@ -43,6 +71,8 @@ class Sandbox:
             self._printout(s5, d5, e5)
             self._printout(s6, d6, e6)
 
+        return self._normalize([s1, s2, s3, s4, s5, s6])
+
 
     def _check_internet(self, info=True):
         '''
@@ -68,6 +98,8 @@ class Sandbox:
         if info:
             self._printout(s4, d4, e4)
 
+        return self._normalize([s1, s2, s3, s4])
+
     def _check_specs(self, info=True):
         self._printout(10, "SPECS OF THE SYSTEM")
 
@@ -88,8 +120,13 @@ class Sandbox:
             self._printout(s5, d5, e5)
             self._printout(s6, d6, e6)
 
+        return self._normalize([s1, s2, s3, s4, s5, s6])
 
     def _printout(self, score, description, extra=None):
+
+        # enable color in cmd for Windows
+        if os.name == 'nt':
+            os.system('color')
 
         _CLEAR = '\033[0m'
         _BOLD = '\033[1m'
@@ -115,7 +152,7 @@ class Sandbox:
                 left_spaces = int((spaces-1) / 2)
                 right_spaces = int(left_spaces + 1)
 
-            left = f'\n{_BOLD}{_ITALIC}{_UNDERLINED}{_YELLOW}' + left_spaces * ' '
+            left = f'{_BOLD}{_ITALIC}{_UNDERLINED}{_YELLOW}' + left_spaces * ' '
             right = right_spaces * ' ' + f'{_CLEAR}'
             description = f'{left}{description}{right}'
 
@@ -133,8 +170,9 @@ class Sandbox:
             description = f'{_BOLD}{_RED}[-----] {description}{_CLEAR}'
 
         # make it a bit more exciting
+        print()
         print(description)
-        time.sleep(0.5)
+        time.sleep(0.2)
         if extra:
             print(f"-> {extra}")
             time.sleep(1)
