@@ -49,6 +49,9 @@ class FileSystem:
         r"C:\WINDOWS\system32\drivers\vmrawdsk.sys",
         r"C:\WINDOWS\system32\drivers\vmmemctl.sys",
         r"C:\WINDOWS\system32\drivers\vm3dmp.sys",
+        r"C:\WINDOWS\system32\drivers\vmci.sys",
+        r"C:\WINDOWS\system32\drivers\vmsci.sys",
+        r"C:\WINDOWS\system32\drivers\vmx_svga.sys"
     ]
 
     _PROCESSES = [
@@ -57,10 +60,13 @@ class FileSystem:
         "vboxtray.exe",
         "xenservice.exe",
         "VMSrvc.exe",
+        "vemusrvc.exe",
         "VMUSrvc.exe",
         "qemu-ga.exe",
         "prl_cc.exe",
         "prl_tools.exe",
+        "vmtoolsd.exe",
+        "df5serv.exe",
     ]
 
     @staticmethod
@@ -104,6 +110,8 @@ class FileSystem:
     # perhaps even look at time the files were edited
 
     @staticmethod
+    def clib():
+        return
 
 
 

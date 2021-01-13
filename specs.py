@@ -1,4 +1,3 @@
-import shutil
 import psutil
 
 class Specs:
@@ -6,16 +5,18 @@ class Specs:
     def check_disk_space():
         did_succeed = 1
 
-        total, used, free = shutil.disk_usage("./")
-
+        pdisk = psutil.disk_usage('./')
+        print(pdisk)
         # put amount in gigabytes
-        total = total / (2 ** 30)
-        used = used / (2**30)
-        free = free / (2 ** 30)
+        total = pdisk.total / (2 ** 30)
+        used = pdisk.used / (2 ** 30)
+        free = pdisk.free / (2 ** 30)
+        percentage = pdisk.percent
 
-        print("Total: %d GiB" % (total))
-        print("Used: %d GiB" % (used))
-        print("Free: %d GiB" % (free))
+        print(f"pstutil Total: {total} GiB")
+        print(f"psutil Used: {used} GiB")
+        print(f"psutil Free: {free} GiB")
+        print(f"psutil Used/Total percentage: {percentage}")
 
         # if computer has less than 200 gigabytes of disk space, something is probably phishy
         if total < 60:
@@ -30,6 +31,7 @@ class Specs:
             did_succeed = 0.99
 
         # TODO: check out total/used or total/free ratio?
+
         return did_succeed
 
     @staticmethod
@@ -71,4 +73,3 @@ class Specs:
             did_succeed = 0.99
 
         return did_succeed
-

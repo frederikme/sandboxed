@@ -18,20 +18,25 @@ def is_sandboxed():
 
     validness = 1.0
 
-    validness *= InternetAccess.basic_ping()
+    # Internet access
+    validness *= InternetAccess.check_basic_ping()
+    validness *= InternetAccess.check_download_file()
+    validness *= InternetAccess.check_http_post()
+    validness *= InternetAccess.check_sockdnsreq()
 
+    # Specifications
     validness *= Specs.check_disk_space()
     validness *= Specs.check_ram_space()
     validness *= Specs.check_cpu_cores()
 
+    # Internal file system
     validness *= FileSystem.check_registry_keys()
     validness *= FileSystem.check_files()
     validness *= FileSystem.check_processes()
 
-
-
     return validness
 
 if __name__ == '__main__':
+
     validness = is_sandboxed()
     print(f'for now the chance of being in a virtual environment is {100 - validness * 100}%')

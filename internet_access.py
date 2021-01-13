@@ -1,5 +1,7 @@
 import os
 import subprocess
+import requests
+import socket
 
 '''
 This class will check whether there is 'real' connection to the internet.
@@ -11,7 +13,7 @@ With a value closer to 0 thinking it's sandboxed and
 class InternetAccess:
 
     @staticmethod
-    def basic_ping():
+    def check_basic_ping():
         '''
         Basic ping function -> checks if wifi is enabled.
         :return: did_succeed: 1 if wifi is enabled, 0 if wifi is disabled
@@ -19,10 +21,16 @@ class InternetAccess:
 
         did_succeed = 1
 
+        if os.name == 'nt':
+            # windows based
+            command = "ping -w 4 google.com"
+        else:
+            # linux based
+            command = "ping -c 4 google.com"
+
         try:
-            # -c 4 indicates it will ping 4 times to google.com
             # -> 64 bytes from 172.217.168.206: icmp_seq=0 ttl=119 time=21.761 ms
-            output = subprocess.check_output("ping -c 4 google.com", shell=True)
+            output = subprocess.check_output(command, shell=True)
 
             # somehow check if ping is normal?
             for o in output.decode().split('\n'):
@@ -34,13 +42,47 @@ class InternetAccess:
         except subprocess.CalledProcessError as e:
             # -> 'ping: cannot resolve google.com: Unknown host'
             output = e.output
-            did_succeed = 0.01
+            did_succeed = 0.70
 
         return did_succeed
 
     @staticmethod
-    def advanced_ping():
-        # request for webpage, scrape with beautifulsoup
-        # make other request
-        return
+    def check_download_file():
+        did_succeed = 1
+        try:
+            r = requests.get('http://ipv4.download.thinkbroadband.com/20MB.zip')
+            if r.status_code != 200:
+                did_succeed = 0.95
+        except:
+            did_succeed = 0.90
 
+        return did_succeed
+
+    @staticmethod
+    def check_http_post():
+        did_succeed = 1
+        try:
+            r = requests.post("http://bugs.python.org", data={'number': 12524, 'type': 'issue', 'action': 'show'})
+            if r.status_code != 200:
+                did_succeed = 0.95
+        except:
+            did_succeed = 0.90
+        return did_succeed
+
+    @staticmethod
+    def check_sockdnsreq():
+        '''
+        With sockets you go on the level lower and actually control the connection and send/receive raw bytes. 
+        HTTP connection is a protocol that runs on a socket. 
+        HTTP connection is a higher-level abstraction of a network connection.
+        '''
+        did_succeed = 1
+        try:
+            addr1 = socket.gethostbyname('google.com') # 172.217.168.206
+            socket.gethostbyname('yahoo.com')
+            socket.gethostbyname('facebook.com')
+            socket.gethostbyname('instagram.com')
+        except:
+            did_succeed = 0.90
+
+        return did_succeed
