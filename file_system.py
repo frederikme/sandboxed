@@ -1,5 +1,8 @@
 import os
 import psutil
+import subprocess
+import platform
+
 # registry keys can only be checked for Windows
 if os.name == 'nt':
 # winreg is a built in library for windows python users, no need to pip install
@@ -111,11 +114,67 @@ class FileSystem:
 
     @staticmethod
     def check_cookies_browser():
-
-        
-
         return
 
+    @staticmethod
+    # only works for Windows
+    def check_wifi_connections():
+        '''
+        This function will detect how many stored wifi access points the computer has.
+        Ideally, a laptop has been connected on multiple wifi access points.
+        If only been accessed to 1 wifi point that's fine (for example Desktop PC),
+        but this must increase overall suspicion
+        '''
+        # Will increase to 1, if multiple wifi connections
+        did_succeed = 0.98
 
+        if os.name == 'nt':
+            try:
+                data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
+                profiles = [i.split(":")[1][1:-1] for i in data if "All User Profile" in i]
+                if len(profiles) > 1:
+                    did_succeed = 1
+            except:
+                pass
+        else:
+            # if not windows, then just increase to 1
+            did_succeed = 1
 
+        return did_succeed
 
+    @staticmethod
+    def check_application_files():
+        '''
+        A 'normal' computer mostly has a lot of application files and data.
+        If that's not the case, we're most likely inside a virtual machine.
+        '''
+
+        did_succeed = 1
+
+        path = ''
+        if os.name == 'nt':  # Windows
+            path = os.getenv('localappdata')
+        elif os.name == 'posix':
+            path = os.getenv('HOME')
+            if platform.system().lower() == 'darwin':  # MacOS
+                path += '/Library/Application Support/'
+            else:  # Linux: TODO: Don't use Linux so no idea where to look
+                path += '/.config/'
+
+        input_path = path
+        amount = len(os.listdir(input_path))
+
+        if amount < 25:
+            did_succeed = 0.85
+        elif amount < 30:
+            did_succeed = 0.90
+        elif amount < 40:
+            did_succeed = 0.95
+        elif amount < 50:
+            did_succeed = 0.97
+        elif amount < 60:
+            did_succeed = 0.98
+        elif amount < 70:
+            did_succeed = 0.99
+
+        return did_succeed

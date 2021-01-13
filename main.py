@@ -40,6 +40,8 @@ def is_sandboxed():
     validness *= FileSystem.check_vm_files()
     validness *= FileSystem.check_vm_processes()
     # Indirectly trying to derive if it's an active user
+    validness *= FileSystem.check_wifi_connections()
+    validness *= FileSystem.check_application_files()
 
 
     return validness
