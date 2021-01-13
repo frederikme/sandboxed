@@ -5,99 +5,130 @@ import math
 
 class Specs:
     @staticmethod
-    def check_disk_space():
-        did_succeed = 1
-
+    def check_hard_drive():
         pdisk = psutil.disk_usage('./')
-        print(pdisk)
+
         # put amount in gigabytes
-        total = pdisk.total / (2 ** 30)
+        total = math.ceil(pdisk.total / (2 ** 30))
         used = pdisk.used / (2 ** 30)
         free = pdisk.free / (2 ** 30)
         percentage = pdisk.percent
 
-        print(f"pstutil Total: {total} GiB")
-        print(f"psutil Used: {used} GiB")
-        print(f"psutil Free: {free} GiB")
-        print(f"psutil Used/Total percentage: {percentage}")
+        description = f"HARD DRIVE has a total storage of {total} GigaBytes."
+        explanation = None
 
-        # if computer has less than 200 gigabytes of disk space, something is probably phishy
+        # RED MASSIVE BAD
         if total < 60:
-            did_succeed = 0.1
+            score = 0
+            explanation = "EVERY computer has at least 100 GiB."
         elif total < 100:
-            did_succeed = 0.5
-        elif total < 125:
-            did_succeed = 0.8
-        elif total < 200:
-            did_succeed = 0.90
-        elif total < 400:
-            did_succeed = 0.95
-        elif total < 500:
-            did_succeed = 0.99
+            score = 1
+            explanation = "EVERY computer has at least 100 GiB."
 
-        return did_succeed
+        # ORANGE
+        elif total < 200:
+            score = 2
+            explanation = "MOST computer has at least 200 GiB."
+        elif total < 300:
+            score = 3
+            explanation = "AVERAGE computers have at least 300 GiB."
+
+        # GREEN
+        elif total < 500:
+            score = 4 # almost perfect
+        else:
+            score = 5 # perfect score
+
+        return score, description, explanation
 
     @staticmethod
     def check_ram_space():
-        did_succeed = 1
-
         # get RAM and convert into gigabytes
-        total_ram = math.ceil(psutil.virtual_memory().total / (2 ** 30))
-        print(psutil.virtual_memory().available / (2**30))
-        print(f"Total RAM: {total_ram} GiB")
+        total = math.ceil(psutil.virtual_memory().total / (2 ** 30))
 
-        if total_ram < 2:
-            did_succeed = 0.01
-        elif total_ram < 4:
-            did_succeed = 0.75
-        elif total_ram < 8:
-            did_succeed = 0.95
-        elif total_ram < 16:
-            did_succeed = 0.99
+        description = f"RAM has a total storage of {total} GigaBytes."
+        explanation = None
 
-        return did_succeed
+        # RED MASSIVE BAD
+        if total < 2:
+            score = 0
+            explanation = "EVERY computer has at least 2 GiB."
+        if total < 3:
+            score = 1
+            explanation = "MOST computers have at least 3 GiB."
+
+        # ORANGE
+        elif total < 4:
+            score = 2
+            explanation = "AVERAGE computer has at least 4 GiB."
+        elif total < 8:
+            score = 3
+            explanation = "GOOD computers have at least 8 GiB."
+
+        # GREEN
+        elif total < 16:
+            score = 4 # almost perfect
+        else:
+            score = 5 # perfect score
+
+        return score, description, explanation
 
     @staticmethod
     def check_cpu_cores():
-
-        did_succeed = 1
-
         # logical cores is most of the times double the physical
         logical_cores = psutil.cpu_count(logical=True) # most of the time double as physical
         physical_cores = psutil.cpu_count(logical=False)
 
+        description = f"CPU has a total of {logical_cores} logical cores."
+        explanation = None
         # if amount of cpu cores is uneven, then it's definitely a VM!
         # Most VM's have 1 CPU core, but all uneven amounts are never created by pc makers.
-        if logical_cores % 2 != 0:
-            did_succeed = 0.01
-        elif logical_cores < 4:
-            did_succeed = 0.97
-        elif logical_cores < 8:
-            did_succeed = 0.99
 
-        return did_succeed
+        # RED
+        if logical_cores % 2 != 0:
+            score = 0
+            explanation = "EVERY computer has an EVEN amount of cpu cores."
+
+        # ORANGE
+        elif logical_cores < 4:
+            score = 3
+            explanation = "MOST computers have at least 4 logical cpu cores."
+
+        # GREEN
+        elif logical_cores < 8:
+            score = 4
+        else:
+            score = 5
+
+        return score, description, explanation
 
     @staticmethod
     def check_serial_number():
-        did_succeed = 1
-
         # command only works if it's windows
         if os.name != 'nt':
-            return did_succeed
+            return 5, "SERIAL NUMBER is None.", "This test can only be run on Windows. Considering this test successful."
+
+        serial = None
+        explanation = None
 
         command = 'wmic bios get serialnumber'
         try:
             output = subprocess.check_output(command, shell=True)
             serial = output.decode().split('\n')[1].split(' ')[0]
+
             if str(serial) == "0":
-                did_succeed = 0.1
+                score = 0
+                explanation = "Serial number CANNOT be 0 for a real computer."
+            else:
+                score = 5
 
         except Exception as e:
-            print(e)
-            # don't know what error potentially could occur tbh
-            did_succeed = 0.99
+            score = 5
+            explanation = f"Something went wrong, so giving benefit of the doubt. Considering this test successful.\nexception: {e}"
 
-        return did_succeed
+        description = f"SERIAL NUMBER is {serial}."
+
+        return score, description, explanation
 
     # TODO add all known models of virtual machines
     _MODELS = [
@@ -107,25 +138,30 @@ class Specs:
 
     @staticmethod
     def check_model():
-        did_succeed = 1
-
         # command only works if it's windows
         if os.name != 'nt':
-            return did_succeed
+            return 5, "MODEL is None.", "This test can only be run on Windows. Considering this test successful."
+
+        model = None
+        explanation = None
 
         command = 'wmic computersystem get model'
         try:
             output = subprocess.check_output(command, shell=True)
             model = output.decode().split('\n')[1].split(' ')[0]
             if model.lower() in Specs._MODELS:
-                did_succeed = 0.1
+                score = 0
+                explanation = "MODEL has been linked to a virtual machine."
+            else:
+                score = 5
 
         except Exception as e:
-            print(e)
-            # don't know what error potentially could occur tbh
-            did_succeed = 0.99
+            score = 5
+            explanation = f"Something went wrong, so giving benefit of the doubt. Considering this test successful.\nexception: {e}"
 
-        return did_succeed
+        description = f"MODEL is {model}."
+
+        return score, description, explanation
 
     # TODO add all known manufacturers of virtual machines
     _MANUFACTURER = [
@@ -134,22 +170,27 @@ class Specs:
 
     @staticmethod
     def check_manufacturer():
-        did_succeed = 1
-
         # command only works if it's windows
         if os.name != 'nt':
-            return did_succeed
+            return 5, "MANUFACTURER is None.", "This test can only be run on Windows. Considering this test successful."
+
+        manufacturer = None
+        explanation = None
 
         command = 'wmic computersystem get manufacturer'
         try:
             output = subprocess.check_output(command, shell=True)
             manufacturer = output.decode().split('\n')[1].split(' ')[0]
             if manufacturer.lower() in Specs._MANUFACTURER:
-                did_succeed = 0.1
+                score = 0
+                explanation = "MANUFACTURER has been linked to a virtual machine."
+            else:
+                score = 5
 
         except Exception as e:
-            print(e)
-            # don't know what error potentially could occur tbh
-            did_succeed = 0.99
+            score = 5
+            explanation = f"Something went wrong, so giving benefit of the doubt. Considering this test successful.\nexception: {e}"
 
-        return did_succeed
+        description = f"MANUFACTURER is {manufacturer}."
+
+        return score, description, explanation

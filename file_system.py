@@ -7,6 +7,7 @@ import platform
 if os.name == 'nt':
 # winreg is a built in library for windows python users, no need to pip install
     import winreg
+    import win32net
 
 '''
 This class is mostly aimed for Windows
@@ -74,47 +75,57 @@ class FileSystem:
 
     @staticmethod
     def check_vm_registry_keys():
-        did_succeed = 1
+        if os.name != 'nt':
+            return 5, "VM REGISTRY KEYS are None.", "This test can only be run on Windows. Considering this test successful."
+
+        score = 5
+        description = f"REGISTRY KEYS will look for VM related keys."
+        explanation = None
 
         for key in FileSystem._KEYS:
             try:
                 reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
                 winreg.OpenKey(reg, key)
 
-                did_succeed = 0.2
+                score = 0
+                explanation = f"Found a key {key} which is related to VM."
             except:
-                # no such key or not Windows as os
+                # no such key, which is good
                 continue
 
-        return did_succeed
+        return score, description, explanation
 
     @staticmethod
     def check_vm_files():
-        did_succeed = 1
+        if os.name != 'nt':
+            return 5, "VM RELATED FILES are None.", "This test can only be run on Windows. Considering this test successful."
+
+        score = 5
+        description = f"FILES will look for VM related files."
+        explanation = None
 
         for filepath in FileSystem._FILES:
             if os.path.exists(filepath):
-                did_succeed = 0.1
+                score = 0
+                explanation = f"Found a file {filepath} which is related to VM."
 
-        return did_succeed
+        return score, description, explanation
 
     @staticmethod
     def check_vm_processes():
-        did_succeed = 1
+        if os.name != 'nt':
+            return 5, "VM RELATED PROCESSES are None.", "This test can only be run on Windows. Considering this test successful."
+
+        score = 5
+        description = f"PROCESSES will look for VM related files."
+        explanation = None
 
         for process in FileSystem._PROCESSES:
             if process.lower() in (p.name().lower() for p in psutil.process_iter()):
-                did_succeed = 0.1
+                score = 0
+                explanation = f"Found a process: {process} which is related to VM."
 
-        return did_succeed
-
-    # get passwords en cookie files etc
-    # if user has no files that indicate that it's a valid used computer
-    # perhaps even look at time the files were edited
-
-    @staticmethod
-    def check_cookies_browser():
-        return
+            return score, description, explanation
 
     @staticmethod
     # only works for Windows
@@ -126,21 +137,32 @@ class FileSystem:
         but this must increase overall suspicion
         '''
         # Will increase to 1, if multiple wifi connections
-        did_succeed = 0.98
+        if os.name != 'nt':
+            return 5, "STORED WIFI are None.", "This test can only be run on Windows. Considering this test successful."
 
-        if os.name == 'nt':
-            try:
-                data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
-                profiles = [i.split(":")[1][1:-1] for i in data if "All User Profile" in i]
-                if len(profiles) > 1:
-                    did_succeed = 1
-            except:
-                pass
-        else:
-            # if not windows, then just increase to 1
-            did_succeed = 1
+        description = f"WIFI CONNECTIONS will look for stored wifi points."
 
-        return did_succeed
+        try:
+            data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode('utf-8').split('\n')
+            profiles = [i.split(":")[1][1:-1] for i in data if "All User Profile" in i]
+
+            amount = len(profiles)
+
+            explanation = f"Found {amount} stored wifi access points."
+            if amount == 0:
+                score = 1
+            elif amount == 1:
+                score = 3
+            elif amount <= 5:
+                score = 4
+            else:
+                score = 5
+
+        except Exception as e:
+            score = 5
+            explanation = f"Something went wrong, so giving benefit of the doubt. Considering this test successful.\nexception: {e}"
+
+        return score, description, explanation
 
     @staticmethod
     def check_application_files():
@@ -148,8 +170,6 @@ class FileSystem:
         A 'normal' computer mostly has a lot of application files and data.
         If that's not the case, we're most likely inside a virtual machine.
         '''
-
-        did_succeed = 1
 
         path = ''
         if os.name == 'nt':  # Windows
@@ -164,17 +184,52 @@ class FileSystem:
         input_path = path
         amount = len(os.listdir(input_path))
 
-        if amount < 25:
-            did_succeed = 0.85
-        elif amount < 30:
-            did_succeed = 0.90
-        elif amount < 40:
-            did_succeed = 0.95
-        elif amount < 50:
-            did_succeed = 0.97
-        elif amount < 60:
-            did_succeed = 0.98
-        elif amount < 70:
-            did_succeed = 0.99
+        description = f"APPLICATION FILES will look for amount of stored files."
+        explanation = f"Found {amount} files in {path}."
 
-        return did_succeed
+        if amount < 25:
+            score = 1
+            explanation = explanation + " Looks like a VM or a new PC."
+        elif amount < 30:
+            score = 2
+            explanation = explanation + " Looks like a VM or a new PC."
+        elif amount < 45:
+            score = 3
+            explanation = explanation + " Looks like a VM or rather unused PC."
+        elif amount < 70:
+            score = 4
+        else:
+            score = 5
+
+        return score, description, explanation
+
+    @staticmethod
+    # only works for Windows
+    def check_prev_logins():
+        if os.name != 'nt':
+            return 5, "PREV LOGINS are None.", "This test can only be run on Windows. Considering this test successful."
+
+
+        users,nusers,_ = win32net.NetUserEnum(None,2)
+        logons = 0
+        for user in users:
+            logons += int(user['num_logons'])
+
+        description = f"PREV LOGINS will look for the amount of logins on the pc."
+        explanation = f"Amount of logins on the pc is {logons}."
+
+        if logons < 25:
+            score = 1
+            explanation = explanation + " Looks like a VM or a new PC."
+        elif logons < 100:
+            score = 2
+            explanation = explanation + " Looks like a VM or a new PC."
+        elif logons < 200:
+            score = 3
+            explanation = explanation + " Looks like a VM or rather unused PC."
+        elif logons < 1000:
+            score = 4
+        else:
+            score = 5
+
+        return score, description, explanation
