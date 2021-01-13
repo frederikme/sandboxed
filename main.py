@@ -25,14 +25,22 @@ def is_sandboxed():
     validness *= InternetAccess.check_sockdnsreq()
 
     # Specifications
+    # Assigned specifications when making virtual machine, default when real machine
     validness *= Specs.check_disk_space()
     validness *= Specs.check_ram_space()
     validness *= Specs.check_cpu_cores()
+    # Default given specifications by the (virtual/real) machine
+    validness *= Specs.check_serial_number()
+    validness *= Specs.check_model()
+    validness *= Specs.check_manufacturer()
 
     # Internal file system
-    validness *= FileSystem.check_registry_keys()
-    validness *= FileSystem.check_files()
-    validness *= FileSystem.check_processes()
+    # Specific searching for virtual machine related indicators
+    validness *= FileSystem.check_vm_registry_keys()
+    validness *= FileSystem.check_vm_files()
+    validness *= FileSystem.check_vm_processes()
+    # Indirectly trying to derive if it's an active user
+
 
     return validness
 
@@ -40,3 +48,7 @@ if __name__ == '__main__':
 
     validness = is_sandboxed()
     print(f'for now the chance of being in a virtual environment is {100 - validness * 100}%')
+
+    with open('mylog.txt', 'w+') as f:
+        f.write(f'for now the chance of being in a virtual environment is {100 - validness * 100}%')
+

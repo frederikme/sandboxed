@@ -1,6 +1,6 @@
 import ctypes
 
-_sum = ctypes.CDLL('libsum.so')
+_lib = ctypes.CDLL('libsum.so')
 
-result = _sum.connect()
+result = _lib.connect()
 

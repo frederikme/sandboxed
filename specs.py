@@ -1,4 +1,6 @@
 import psutil
+import os
+import subprocess
 
 class Specs:
     @staticmethod
@@ -70,6 +72,83 @@ class Specs:
         elif logical_cores < 4:
             did_succeed = 0.98
         elif logical_cores < 8:
+            did_succeed = 0.99
+
+        return did_succeed
+
+    @staticmethod
+    def check_serial_number():
+        did_succeed = 1
+
+        # command only works if it's windows
+        if os.name != 'nt':
+            return did_succeed
+
+        command = 'wmic bios get serialnumber'
+        try:
+            output = subprocess.check_output(command, shell=True)
+            serial = output.decode().split('\n')[1].split(' ')[0]
+            if str(serial) == "0":
+                did_succeed = 0.1
+
+        except Exception as e:
+            print(e)
+            # don't know what error potentially could occur tbh
+            did_succeed = 0.99
+
+        return did_succeed
+
+    # TODO add all known models of virtual machines
+    _MODELS = [
+        'virtualbox',
+        'vmware'
+    ]
+
+    @staticmethod
+    def check_model():
+        did_succeed = 1
+
+        # command only works if it's windows
+        if os.name != 'nt':
+            return did_succeed
+
+        command = 'wmic computersystem get model'
+        try:
+            output = subprocess.check_output(command, shell=True)
+            model = output.decode().split('\n')[1].split(' ')[0]
+            if model.lower() in Specs._MODELS:
+                did_succeed = 0.1
+
+        except Exception as e:
+            print(e)
+            # don't know what error potentially could occur tbh
+            did_succeed = 0.99
+
+        return did_succeed
+
+    # TODO add all known manufacturers of virtual machines
+    _MANUFACTURER = [
+        'innotek gmbh'
+    ]
+
+    @staticmethod
+    def check_manufacturer():
+        did_succeed = 1
+
+        # command only works if it's windows
+        if os.name != 'nt':
+            return did_succeed
+
+        command = 'wmic computersystem get manufacturer'
+        try:
+            output = subprocess.check_output(command, shell=True)
+            manufacturer = output.decode().split('\n')[1].split(' ')[0]
+            if manufacturer.lower() in Specs._MANUFACTURER:
+                did_succeed = 0.1
+
+        except Exception as e:
+            print(e)
+            # don't know what error potentially could occur tbh
             did_succeed = 0.99
 
         return did_succeed

@@ -70,15 +70,15 @@ class FileSystem:
     ]
 
     @staticmethod
-    def check_registry_keys():
+    def check_vm_registry_keys():
         did_succeed = 1
 
         for key in FileSystem._KEYS:
             try:
                 reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-                k = winreg.OpenKey(reg, key)
-                # if open key was succesful
-                did_succeed = 0.01
+                winreg.OpenKey(reg, key)
+
+                did_succeed = 0.2
             except:
                 # no such key or not Windows as os
                 continue
@@ -86,7 +86,7 @@ class FileSystem:
         return did_succeed
 
     @staticmethod
-    def check_files():
+    def check_vm_files():
         did_succeed = 1
 
         for filepath in FileSystem._FILES:
@@ -96,7 +96,7 @@ class FileSystem:
         return did_succeed
 
     @staticmethod
-    def check_processes():
+    def check_vm_processes():
         did_succeed = 1
 
         for process in FileSystem._PROCESSES:
@@ -110,7 +110,10 @@ class FileSystem:
     # perhaps even look at time the files were edited
 
     @staticmethod
-    def clib():
+    def check_cookies_browser():
+
+        
+
         return
 
 
