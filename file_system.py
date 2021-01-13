@@ -120,15 +120,19 @@ class FileSystem:
         description = f"PROCESSES will look for VM related files."
         explanation = None
 
-        current_processes = psutil.process_iter()
+        try:
+            current_processes = psutil.process_iter()
 
-        for process in FileSystem._PROCESSES:
-            for current_p in current_processes:
-                if process.lower() == current_p.name().lower():
-                    score = 0
-                    explanation = f"Found a process: {process} which is related to VM."
+            for process in FileSystem._PROCESSES:
+                for current_p in current_processes:
+                    if process.lower() == current_p.name().lower():
+                        score = 0
+                        explanation = f"Found a process: {process} which is related to VM."
 
-            return score, description, explanation
+        except psutil.AccessDenied:
+            explanation = "Access to processes was denied. That's a good thing. Continuing."
+
+        return score, description, explanation
 
     @staticmethod
     # only works for Windows
