@@ -10,7 +10,7 @@ setup(
   author='Frederik Mees',                   # Type in your name
   author_email='frederik.mees@gmail.com',      # Type in your E-Mail
   url='https://github.com/frederikme/sandbox-evasion',   # Provide either the link to your github or to your website
-  download_url='',    # I explain this later on
+  download_url='https://github.com/frederikme/sandbox-evasion/archive/1.0.tar.gz',    # I explain this later on
   keywords=['Sandbox', 'Virtual machine', 'Virtualbox', 'detection'],   # Keywords that define your project best
   install_requires=['psutil', 'requests', 'pypiwin32'],
 
