@@ -2,8 +2,8 @@ import setuptools
 from distutils.core import setup
 
 setup(
-  name='sandbox-evasion',         # How you named your folder
-  packages=['sandbox-evasion'],   # Chose the same as "name"
+  name='sandboxed',         # How you named your folder
+  packages=['sandboxed'],   # Chose the same as "name"
   version='1.0',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description='Sandbox/Virtual Machine detection',   # Give a short description about your library

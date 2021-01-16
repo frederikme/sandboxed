@@ -169,9 +169,3 @@ class Sandbox:
             print(f"-> {extra}")
             time.sleep(1)
         time.sleep(1.5)
-
-if __name__ == '__main__':
-    sb = Sandbox(logging=True)
-    # value between 0 and 1, with 1 being sandboxed and 0 being real
-    percentage = sb.is_sandboxed()
-    print(percentage)
