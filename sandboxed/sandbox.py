@@ -1,6 +1,6 @@
-from internet_access import InternetAccess
-from specs import Specs
-from file_system import FileSystem
+from sandboxed.file_system import FileSystem
+from sandboxed.internet_access import *
+from sandboxed.specs import *
 import time, os
 
 class Sandbox:
