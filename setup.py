@@ -4,13 +4,13 @@ from distutils.core import setup
 setup(
   name='sandboxed',         # How you named your folder
   packages=['sandboxed'],   # Chose the same as "name"
-  version='1.0',      # Start with a small number and increase it with every change you make
+  version='1.2',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description='Sandbox/Virtual Machine detection',   # Give a short description about your library
   author='Frederik Mees',                   # Type in your name
   author_email='frederik.mees@gmail.com',      # Type in your E-Mail
   url='https://github.com/frederikme/sandbox-evasion',   # Provide either the link to your github or to your website
-  download_url='https://github.com/frederikme/sandbox-evasion/archive/1.0.tar.gz',    # I explain this later on
+  download_url='https://github.com/frederikme/sandbox-evasion/archive/1.2.tar.gz',    # I explain this later on
   keywords=['Sandbox', 'Virtual machine', 'Virtualbox', 'detection'],   # Keywords that define your project best
   install_requires=['psutil', 'requests', 'pypiwin32'],
 
