@@ -6,7 +6,7 @@ import math
 class Specs:
     @staticmethod
     def check_hard_drive():
-        pdisk = psutil.disk_usage('./')
+        pdisk = psutil.disk_usage('../')
 
         # put amount in gigabytes
         total = math.ceil(pdisk.total / (2 ** 30))
@@ -28,7 +28,7 @@ class Specs:
         # ORANGE
         elif total < 200:
             score = 2
-            explanation = "MOST computer has at least 200 GiB."
+            explanation = "MOSTs computer have at least 200 GiB."
         elif total < 300:
             score = 3
             explanation = "AVERAGE computers have at least 300 GiB."

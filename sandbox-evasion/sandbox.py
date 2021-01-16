@@ -5,16 +5,12 @@ import time, os
 
 class Sandbox:
 
-    def __init__(self):
-
-
-
+    def __init__(self, logging=False):
+        self.logging = logging
         return
 
     def _normalize(self, values):
-
         normalization = 0
-
         for value in values:
             # 0 value means, ABORT -> return 0
             if value == 0:
@@ -32,26 +28,22 @@ class Sandbox:
         return normalization
 
 
-    def is_sandboxed(self, info=True):
-        s1 = self._check_specs(info=info)
-        s2 = self._check_internet(info=info)
-        s3 = self._check_file_system(info=info)
-
-        print(s1, s2, s3)
+    def is_sandboxed(self):
+        s1 = self._check_specs()
+        s2 = self._check_internet()
+        s3 = self._check_file_system()
 
         final_score = self._normalize([s1, s2, s3])
-        print(final_score)
 
-        percentage = 100 - ((final_score / 5) * 100)
+        percentage = int(100 - ((final_score / 5) * 100))
 
-        print(f"Conclusion: {percentage}% chance of being in a virtual environment.")
+        if self.logging:
+            self._printout(10, f"Conclusion: {percentage}% chance of being in a virtual environment.\n")
 
-        if info:
-            print('\n')
-        return
+        return percentage / 100
 
-    def _check_file_system(self, info=True):
-        self._printout(10, "FILES OF THE SYSTEM")
+    def _check_file_system(self):
+        self._printout(10, "FILESYSTEM")
 
         s1, d1, e1 = FileSystem.check_vm_registry_keys()
         s2, d2, e2 = FileSystem.check_vm_files()
@@ -62,7 +54,7 @@ class Sandbox:
         s5, d5, e5 = FileSystem.check_application_files()
         s6, d6, e6 = FileSystem.check_prev_logins()
 
-        if info:
+        if self.logging:
             self._printout(score=s1, description=d1, extra=e1)
             self._printout(s2, d2, e2)
             self._printout(s3, d3, e3)
@@ -74,7 +66,7 @@ class Sandbox:
         return self._normalize([s1, s2, s3, s4, s5, s6])
 
 
-    def _check_internet(self, info=True):
+    def _check_internet(self):
         '''
         Since internet calls are being called synchronously could take a while,
         we will printout the status after every call made.
@@ -83,24 +75,24 @@ class Sandbox:
         self._printout(10, "INTERNET ACCESS")
 
         s1, d1, e1 = InternetAccess.check_basic_ping()
-        if info:
+        if self.logging:
             self._printout(score=s1, description=d1, extra=e1)
 
         s2, d2, e2 = InternetAccess.check_download_file()
-        if info:
+        if self.logging:
             self._printout(s2, d2, e2)
 
         s3, d3, e3 = InternetAccess.check_http_post()
-        if info:
+        if self.logging:
             self._printout(s3, d3, e3)
 
         s4, d4, e4 = InternetAccess.check_sockdnsreq()
-        if info:
+        if self.logging:
             self._printout(s4, d4, e4)
 
         return self._normalize([s1, s2, s3, s4])
 
-    def _check_specs(self, info=True):
+    def _check_specs(self):
         self._printout(10, "SPECS OF THE SYSTEM")
 
         s1, d1, e1 = Specs.check_hard_drive()
@@ -111,7 +103,7 @@ class Sandbox:
         s5, d5, e5 = Specs.check_model()
         s6, d6, e6 = Specs.check_manufacturer()
 
-        if info:
+        if self.logging:
             self._printout(score=s1, description=d1, extra=e1)
             self._printout(s2, d2, e2)
             self._printout(s3, d3, e3)
@@ -178,6 +170,8 @@ class Sandbox:
             time.sleep(1)
         time.sleep(1.5)
 
-
-sb = Sandbox()
-sb.is_sandboxed()
+if __name__ == '__main__':
+    sb = Sandbox(logging=True)
+    # value between 0 and 1, with 1 being sandboxed and 0 being real
+    percentage = sb.is_sandboxed()
+    print(percentage)

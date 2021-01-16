@@ -117,17 +117,16 @@ class FileSystem:
             return 5, "VM RELATED PROCESSES are None.", "This test can only be run on Windows. Considering this test successful."
 
         score = 5
-        description = f"PROCESSES will look for VM related files."
+        description = f"PROCESSES will look for VM related processes."
         explanation = None
 
         try:
-            current_processes = psutil.process_iter()
-
             for process in FileSystem._PROCESSES:
-                for current_p in current_processes:
+                for current_p in  psutil.process_iter():
                     if process.lower() == current_p.name().lower():
                         score = 0
                         explanation = f"Found a process: {process} which is related to VM."
+                        break
 
         except psutil.AccessDenied:
             explanation = "Access to processes was denied. That's a good thing. Continuing."
