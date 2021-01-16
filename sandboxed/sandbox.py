@@ -43,7 +43,8 @@ class Sandbox:
         return percentage / 100
 
     def _check_file_system(self):
-        self._printout(10, "FILESYSTEM")
+        if self.logging:
+            self._printout(10, "FILESYSTEM")
 
         s1, d1, e1 = FileSystem.check_vm_registry_keys()
         s2, d2, e2 = FileSystem.check_vm_files()
@@ -72,7 +73,8 @@ class Sandbox:
         we will printout the status after every call made.
         Looks like shitty code, is shtty code, but gives user a nicer quicker printout.
         '''
-        self._printout(10, "INTERNET ACCESS")
+        if self.logging:
+            self._printout(10, "INTERNET ACCESS")
 
         s1, d1, e1 = InternetAccess.check_basic_ping()
         if self.logging:
@@ -93,7 +95,8 @@ class Sandbox:
         return self._normalize([s1, s2, s3, s4])
 
     def _check_specs(self):
-        self._printout(10, "SPECS OF THE SYSTEM")
+        if self.logging:
+            self._printout(10, "SPECS OF THE SYSTEM")
 
         s1, d1, e1 = Specs.check_hard_drive()
         s2, d2, e2 = Specs.check_ram_space()
