@@ -53,3 +53,11 @@ Few basic internet checks are:
 4. DNS Socket Request
 
 
+## Support the Repository
+Feel free to make a pull request and contribute to this project.</br>
+If you feel like buying me a drink:
+* [Patreon](https://www.patreon.com/frederikme)
+* [Paypal](https://paypal.me/frederikmees)
+* [Buy Me A Coffee](https://www.buymeacoffee.com/frederikme)
+
+
