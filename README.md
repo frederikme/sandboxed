@@ -13,5 +13,8 @@ chance = is_sandboxed()
 # optional parameter to turn logging off
 chance = is_sandboxed(logging=False)
 
-print(chance)
+print(f"Chance of being inside a virtual machine is {chance*100}%.")
 ```
+
+### Explanation of the techniques used
+TODO
