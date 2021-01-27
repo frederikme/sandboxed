@@ -18,7 +18,7 @@ print(f"Chance of being inside a virtual machine is {chance*100}%.")
 ```
 
 ## Explanation of the techniques used
-Sandboxed will look at 3 sections to determine whether he's inside a virtual machine.
+Sandboxed will look at 3 sections to determine whether it's being run inside a virtual machine.
 As can be found below:
 1. Specifications of the machine
 2. Filesystem
@@ -32,7 +32,7 @@ Things that are taking into considerations:
 3. CPU (logical) Cores Amount
 4. Serial Number of the PC
 5. Model of the PC
-5. Manufacturer 
+5. Manufacturer of the PC
 
 ### Filesystem on the PC
 Some files directly point to VM that don't exist on real PCs and some files exsist on real PCs that don't exist on the VM.
