@@ -5,18 +5,18 @@ sandboxed is now available on PyPi as a pip installation.
 pip3 install sandboxed
 ```
 ## Usage
+Certainty will be expressed with a value between 0 and 1, whereas closer to 0 is a real machine and closer to 1 a virtual machine.
 ```
 from sandboxed import is_sandboxed
 
-# chance will be between 0 and 1, whereas 0 is a real machine and 1 a virtual machine
-chance = is_sandboxed()
-chance = is_sandboxed(logging=False)
+certainty = is_sandboxed()
+certainty = is_sandboxed(logging=False)
 
-print(f"Chance of being inside a virtual machine is {chance*100}%.")
+print(f"Chance of being inside a virtual machine is {certainty*100}%.")
 ```
 
 ## Explanation of the techniques used
-Sandboxed will look at 3 sections to determine whether it's being run inside a virtual machine.
+Sandboxed will look at 3 aspects to determine whether it's being run inside a virtual machine.
 As can be found below:
 1. [Specifications of the machine](#specifications-of-the-machine)
 2. [Filesystem](#filesystem-on-the-pc)
