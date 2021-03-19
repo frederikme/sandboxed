@@ -10,8 +10,7 @@ if os.name == 'nt':
     import win32net
 
 '''
-This class is mostly aimed for Windows
-I don't know how linux based operating systems act in a virtual machine
+This class is mostly aimed for detecting Windows os as VM
 '''
 class FileSystem:
 
@@ -75,10 +74,10 @@ class FileSystem:
 
     @staticmethod
     def check_vm_registry_keys():
-        if os.name != 'nt':
-            return 5, "VM REGISTRY KEYS are None.", "This test can only be run on Windows. Considering this test successful."
-
         score = 5
+        if os.name != 'nt':
+            return score, "VM REGISTRY KEYS are None.", "This test can only be run on Windows. Considering this test successful."
+
         description = f"REGISTRY KEYS will look for VM related keys."
         explanation = None
 
@@ -97,10 +96,10 @@ class FileSystem:
 
     @staticmethod
     def check_vm_files():
-        if os.name != 'nt':
-            return 5, "VM RELATED FILES are None.", "This test can only be run on Windows. Considering this test successful."
-
         score = 5
+        if os.name != 'nt':
+            return score, "VM RELATED FILES are None.", "This test can only be run on Windows. Considering this test successful."
+
         description = f"FILES will look for VM related files."
         explanation = None
 
@@ -113,10 +112,10 @@ class FileSystem:
 
     @staticmethod
     def check_vm_processes():
-        if os.name != 'nt':
-            return 5, "VM RELATED PROCESSES are None.", "This test can only be run on Windows. Considering this test successful."
-
         score = 5
+        if os.name != 'nt':
+            return score, "VM RELATED PROCESSES are None.", "This test can only be run on Windows. Considering this test successful."
+
         description = f"PROCESSES will look for VM related processes."
         explanation = None
 
@@ -134,7 +133,6 @@ class FileSystem:
         return score, description, explanation
 
     @staticmethod
-    # only works for Windows
     def check_wifi_connections():
         '''
         This function will detect how many stored wifi access points the computer has.
@@ -184,7 +182,7 @@ class FileSystem:
             path = os.getenv('HOME')
             if platform.system().lower() == 'darwin':  # MacOS
                 path += '/Library/Application Support/'
-            else:  # Linux: TODO: Don't use Linux so no idea where to look
+            else:  # Linux: TODO: which path to use?
                 path += '/.config/'
 
         input_path = path
