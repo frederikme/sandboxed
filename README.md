@@ -13,6 +13,8 @@ certainty = is_sandboxed()
 certainty = is_sandboxed(logging=False)
 
 print(f"Chance of being inside a virtual machine is {certainty*100}%.")
+
+>>> Chance of being inside a virtual machine is 95%.
 ```
 
 ## Explanation of the techniques used
